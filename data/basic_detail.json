@@ -1,0 +1,370 @@
+{
+"animal": {
+"ph": "/ˈænɪməl/",
+"pos": "n.",
+"cn": "动物",
+"senses": [
+"动物"
+]
+},
+"open": {
+"ph": "/ˈəʊ.pən/",
+"pos": "adj.",
+"cn": "打开",
+"senses": [
+"打开"
+]
+},
+"change": {
+"ph": "/tʃeɪndʒ/",
+"pos": "n.",
+"cn": "改变",
+"senses": [
+"改变"
+]
+},
+"education": {
+"ph": "/ˌɛdjʊˈkeɪʃn̩/",
+"pos": "n.",
+"cn": "教育",
+"senses": [
+"教育"
+]
+},
+"simple": {
+"ph": "/ˈsɪmpəl/",
+"pos": "n.",
+"cn": "简单",
+"senses": [
+"简单"
+]
+},
+"study": {
+"ph": "/ˈstʌdi/",
+"pos": "v.",
+"cn": "学习",
+"senses": [
+"学习"
+]
+},
+"country": {
+"ph": "/ˈkɐntɹi/",
+"pos": "n.",
+"cn": "国家",
+"senses": [
+"国家"
+]
+},
+"life": {
+"ph": "/laɪf/",
+"pos": "n.",
+"cn": "生活",
+"senses": [
+"生活"
+]
+},
+"reason": {
+"ph": "/ˈɹiːzən/",
+"pos": "n.",
+"cn": "原因",
+"senses": [
+"原因"
+]
+},
+"plan": {
+"ph": "/plæn/",
+"pos": "n.",
+"cn": "计划",
+"senses": [
+"计划"
+]
+},
+"security": {
+"ph": "/sɪˈkjɔːɹəti/",
+"pos": "n.",
+"cn": "安全",
+"senses": [
+"安全"
+]
+},
+"food": {
+"ph": "/fuːd/",
+"pos": "n.",
+"cn": "食物",
+"senses": [
+"食物"
+]
+},
+"increase": {
+"ph": "/ɪnˈkriːs/",
+"pos": "n.",
+"cn": "增加",
+"senses": [
+"v. 增加；增长",
+"n. 增长；增量"
+]
+},
+"world": {
+"ph": "/wɝld/",
+"pos": "n.",
+"cn": "世界",
+"senses": [
+"世界"
+]
+},
+"share": {
+"ph": "/ʃeə(r)/",
+"pos": "v.",
+"cn": "",
+"senses": [
+"v. 分享；共用",
+"n. 份额；股份"
+]
+},
+"password": {
+"ph": "/ˈpæswɜːd/",
+"pos": "n.",
+"cn": "密码",
+"senses": [
+"密码"
+]
+},
+"search": {
+"ph": "/sɜːt͡ʃ/",
+"pos": "n.",
+"cn": "搜索",
+"senses": [
+"搜索"
+]
+},
+"close": {
+"ph": "/kləʊz/",
+"pos": "n.",
+"cn": "关闭",
+"senses": [
+"关闭"
+]
+},
+"plant": {
+"ph": "/plɑːnt/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 植物；工厂",
+"v. 种植"
+]
+},
+"important": {
+"ph": "/ɪmˈpɔːtnt/",
+"pos": "adj.",
+"cn": "",
+"senses": [
+"adj. 重要的；有影响的"
+]
+},
+"work": {
+"ph": "/wɜːk/",
+"pos": "v.",
+"cn": "",
+"senses": [
+"v. 工作；运转",
+"n. 工作；作品"
+]
+},
+"city": {
+"ph": "/ˈsɪti/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 城市；市"
+]
+},
+"price": {
+"ph": "/pɹaɪs/",
+"pos": "n.",
+"cn": "价格",
+"senses": [
+"价格"
+]
+},
+"use": {
+"ph": "/juːz/",
+"pos": "v.",
+"cn": "使用",
+"senses": [
+"v. 使用；利用",
+"n. 用途；使用"
+]
+},
+"school": {
+"ph": "/skuːl/",
+"pos": "n.",
+"cn": "学校",
+"senses": [
+"学校"
+]
+},
+"student": {
+"ph": "/ˈstjuːdnt/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 学生；研究者"
+]
+},
+"teacher": {
+"ph": "/ˈtiːtʃə(r)/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 老师；教师"
+]
+},
+"user": {
+"ph": "/ˈjuːzə/",
+"pos": "n.",
+"cn": "用户",
+"senses": [
+"用户"
+]
+},
+"phone": {
+"ph": "/fəʊ̯n/",
+"pos": "n.",
+"cn": "手机",
+"senses": [
+"手机"
+]
+},
+"computer": {
+"ph": "/kəmˈpjuːtə/",
+"pos": "n.",
+"cn": "电脑",
+"senses": [
+"电脑"
+]
+},
+"answer": {
+"ph": "/ˈɑːnsə(r)/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 答案；回答",
+"v. 回答；答复"
+]
+},
+"picture": {
+"ph": "/ˈpɪktʃə(r)/",
+"pos": "n.",
+"cn": "",
+"senses": [
+"n. 图片；照片",
+"v. 想象；描绘"
+]
+},
+"music": {
+"ph": "/ˈmjuːzɪk/",
+"pos": "n.",
+"cn": "音乐",
+"senses": [
+"音乐"
+]
+},
+"game": {
+"ph": "/ɡeɪm/",
+"pos": "n.",
+"cn": "游戏",
+"senses": [
+"游戏"
+]
+},
+"forest": {
+"ph": "/ˈfɒɹɪst/",
+"pos": "n.",
+"cn": "森林",
+"senses": [
+"森林"
+]
+},
+"research": {
+"ph": "/ɹɪˈsɜːtʃ/",
+"pos": "n.",
+"cn": "研究",
+"senses": [
+"研究"
+]
+},
+"science": {
+"ph": "/ˈsaɪəns/",
+"pos": "n.",
+"cn": "科学",
+"senses": [
+"科学"
+]
+},
+"test": {
+"ph": "/test/",
+"pos": "n.",
+"cn": "测试",
+"senses": [
+"测试"
+]
+},
+"login": {
+"ph": "/ˈlɒɡ.ɪn/",
+"pos": "n.",
+"cn": "登录",
+"senses": [
+"登录"
+]
+},
+"upload": {
+"ph": "/ˌʌpˈləʊd/",
+"pos": "v.",
+"cn": "",
+"senses": [
+"v. 上传",
+"n. 上传的文件"
+]
+},
+"tropical rain forest": {
+"ph": "",
+"pos": "",
+"cn": "",
+"senses": [
+"n. 热带雨林"
+]
+},
+"in accordance with": {
+"ph": "",
+"pos": "",
+"cn": "",
+"senses": [
+"prep. 依照；与……一致"
+]
+},
+"a calculated crime": {
+"ph": "",
+"pos": "",
+"cn": "",
+"senses": [
+"n. 有预谋的犯罪"
+]
+},
+"and so forth": {
+"ph": "",
+"pos": "",
+"cn": "",
+"senses": [
+"adv. 等等；诸如此类"
+]
+},
+"for the sake of": {
+"ph": "",
+"pos": "",
+"cn": "",
+"senses": [
+"prep. 为了；出于……的缘故"
+]
+}
+}

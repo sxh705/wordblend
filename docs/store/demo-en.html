@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What Attention Actually Buys You</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #fbfaf7;
+    color: #1c1b19;
+    font-family: Georgia, "Times New Roman", "Source Han Serif SC", serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: 760px; margin: 0 auto; padding: 56px 0 80px; }
+  .kicker { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #9a8f7f; }
+  h1 { font-size: 42px; line-height: 1.22; margin: 14px 0 10px; font-weight: 700; letter-spacing: -.015em; }
+  .meta { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 13px; color: #9a8f7f; padding-bottom: 22px; border-bottom: 1px solid #e8e2d8; }
+  h2 { font-size: 23px; margin: 34px 0 10px; }
+  p { font-size: 19px; line-height: 1.85; margin: 0 0 18px; }
+  .lede { font-size: 20.5px; color: #33302b; }
+  blockquote { margin: 26px 0; padding: 2px 0 2px 18px; border-left: 3px solid #d9cdb8; color: #4a453d; font-size: 18.5px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Machine Learning · Notes</div>
+  <h1>What Attention Actually Buys You</h1>
+  <div class="meta">October 2026 · 7 min read</div>
+
+  <p class="lede">The transformer paper is usually remembered for one diagram: a stack of blocks labelled attention. That diagram is accurate, but it hides the reason the architecture displaced recurrence so quickly. Attention is not a better way to remember a sequence. It is a way to stop pretending that distance in a sentence means distance in meaning.</p>
+
+  <p>Recurrent networks process a sentence one token at a time, carrying a fixed-size hidden state forward. Every piece of information must survive that narrow channel, and the gradient that teaches the model has to travel back through every intermediate step. In practice, the signal fades. A pronoun at the end of a paragraph cannot reliably attend to the noun it refers to, because the noun is many multiplications away.</p>
+
+  <h2>Parallelism was the side effect</h2>
+
+  <p>Attention removes the sequential dependency: every position can look at every other position in a single operation. That makes training dramatically more parallel, which is what allowed models to grow. But parallelism is a consequence, not the goal. The goal was to let the model decide, per token, which other tokens matter, without asking it to compress everything into a single vector.</p>
+
+  <blockquote>Scale did not create the capability; it revealed how much the earlier bottleneck was costing.</blockquote>
+
+  <p>Researchers discovered that scaling both the model and the dataset produced predictable improvements in accuracy, which encouraged laboratories to invest heavily in computational infrastructure. Nevertheless, the expense of training such systems remains a serious obstacle for smaller institutions, and the gap between well-funded and modestly-funded groups has widened rather than narrowed.</p>
+
+  <h2>The part we still cannot explain</h2>
+
+  <p>Interpretability is another persistent challenge. Although attention weights provide a convenient visualization, they do not necessarily explain the reasoning behind a prediction. Several groups have proposed methods that attribute output changes to specific input features, but the results often disagree across techniques, and the field still lacks a widely accepted standard.</p>
+
+  <p>What attention buys you, then, is a mechanism that is simple enough to implement in a few lines and expressive enough to absorb an enormous amount of data. What it does not buy you is an explanation. That remains an open problem, and probably the most interesting one.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+# 依赖与构建产物
+node_modules/
+src/popup-dist/
+dist/
+popup/dist/
+
+# 商店 / 发布包
+*.zip
+*.crx
+*.pem
+!docs/store/**/*.zip
+
+# 本地测试与临时文件
+edge-profile*/
+edge-lite*/
+shots/
+scratch/
+tools/gh.zip
+tools/bin/
+*.log
+*.bak
+*.bak-*
+
+# 系统
+Thumbs.db
+.DS_Store
+
+# 中间产物
+docs/store/screenshots/raw-*.png
+tools/bin/
+tools/gh.zip
+tools/LICENSE
+gh_login.log
