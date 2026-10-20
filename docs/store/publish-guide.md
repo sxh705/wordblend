@@ -14,7 +14,7 @@
 | 隐私政策 | `docs/store/privacy.md` | ✅（需要一个公开 URL） |
 | 权限理由 | `docs/store/listing.md` 末节 | ✅ |
 
-上架前唯一还要做的：把 `docs/store/privacy.md` 和 README 里的 `OWNER` 换成你的 GitHub 用户名（脚本会提示）。
+上架前要做的：把隐私政策 URL 指向 https://github.com/sxh705/wordblend/blob/master/docs/store/privacy.md（已完成）。
 
 ---
 
@@ -41,7 +41,7 @@
    - 权限理由：见 `listing.md` 表格，两条都填
    - 数据使用：**不收集用户数据**，三个勾选项全选「不」
    - 隐私政策 URL：填隐私政策的公开地址（GitHub 仓库里 `docs/store/privacy.md` 的网页地址即可，例如
-     `https://github.com/<你>/wordblend/blob/main/docs/store/privacy.md`）
+     `https://github.com/sxh705/wordblend/blob/main/docs/store/privacy.md`）
    - 远程代码：选「否，我未使用远程代码」
 6. **提交审核**
    - 「测试说明」里写一句：`安装后打开任意中文或英文网页即可看到替换效果；点击被替换的词弹出释义卡片。无需登录。`
