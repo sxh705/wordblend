@@ -48,6 +48,17 @@ export const SITE_MODES = [
   { id: 'block', name: '黑名单', hint: '名单里的站不替换' }
 ]
 
+/* 新装用户的默认站点策略：白名单 + 三个阅读站点。
+   老用户已存的设置（含 mode: 'all'）不会被这里覆盖。 */
+export const DEFAULT_SITES = {
+  mode: 'allow',
+  rules: [
+    { host: 'v2ex.com', lang: 'auto', on: true },
+    { host: 'zhihu.com', lang: 'auto', on: true },
+    { host: 'tieba.baidu.com', lang: 'auto', on: true }
+  ]
+}
+
 export function cleanHost(v) {
   let h = String(v || '').trim().toLowerCase()
   h = h.replace(/^[a-z][a-z0-9+.-]*:\/\//, '').replace(/^\/\//, '')
@@ -82,15 +93,18 @@ export function normalize(raw) {
     on: true,
     dir: 'auto',
     badge: false,
-    zh: { level: 3, banks: d.slice() },
-    en: { level: 3, banks: d.slice() },
-    sites: { mode: 'all', rules: [] }
+    zh: { level: 5, banks: d.slice() },
+    en: { level: 5, banks: d.slice() },
+    sites: {
+      mode: DEFAULT_SITES.mode,
+      rules: DEFAULT_SITES.rules.map((r) => ({ ...r }))
+    }
   }
   if (!raw || typeof raw !== 'object') return out
 
   if (raw.zh || raw.en) {
     const side = (src) => ({
-      level: cleanLevel(src && src.level, 3),
+      level: cleanLevel(src && src.level, 5),
       banks: cleanBanks(src && src.banks, d)
     })
     out.zh = side(raw.zh)
@@ -99,7 +113,7 @@ export function normalize(raw) {
   } else {
     // v1.5 扁平格式
     out.on = parseInt(raw.level, 10) !== 0
-    const lv = cleanLevel(raw.level, 3)
+    const lv = cleanLevel(raw.level, 5)
     const banks = cleanBanks(raw.banks, d)
     out.zh = { level: lv, banks: banks.slice() }
     out.en = { level: lv, banks: banks.slice() }

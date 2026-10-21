@@ -57,16 +57,27 @@
     { rate: Infinity, node: 999, once: false, name: '全量', rateEn: 16, nodeEn: 4, onceEn: true, maxRank: 3 }
   ];
 
+  /* 默认只在这几个站生效（白名单）。新装用户打开别的站不会看到任何改动，
+     想全站生效就去「站点」里切成「所有网站」。 */
+  var DEFAULT_SITES = {
+    mode: 'allow',
+    rules: [
+      { host: 'v2ex.com', lang: 'auto', on: true },
+      { host: 'zhihu.com', lang: 'auto', on: true },
+      { host: 'tieba.baidu.com', lang: 'auto', on: true }
+    ]
+  };
+
   /* on 是总开关：关掉就整页还原、不再扫描。
      两个方向各有自己的档位和词库，互不影响（zh = 中→英，en = 英→中）。 */
   var CFG = {
     on: true,              // 总开关
     dir: 'auto',           // auto / zh2en / en2zh
-    zh: { level: 3, banks: [] },
-    en: { level: 3, banks: [] },
+    zh: { level: 5, banks: [] },
+    en: { level: 5, banks: [] },
     /* 站点规则：all = 所有网站；allow = 仅名单内（白名单）；block = 名单外（黑名单）
        每条规则 { host, lang: 'auto'|'zh2en'|'en2zh', on } */
-    sites: { mode: 'all', rules: [] },
+    sites: { mode: DEFAULT_SITES.mode, rules: [] },
     baseBudget: 3,
     baseBudgetEn: 8,       // 英->中：短页面也要能换出几个词
     badge: false,          // 页面内不再有悬浮按钮；这里只是可选的纯计数角标（不可点、不挡操作）
@@ -384,9 +395,12 @@
     if (!ids.length) ids = bankIds.slice(0, Math.min(4, bankIds.length));
     return {
       on: true, dir: 'auto', badge: false,
-      zh: { level: 3, banks: ids.slice() },
-      en: { level: 3, banks: ids.slice() },
-      sites: { mode: 'all', rules: [] }
+      zh: { level: 5, banks: ids.slice() },
+      en: { level: 5, banks: ids.slice() },
+      sites: {
+        mode: DEFAULT_SITES.mode,
+        rules: JSON.parse(JSON.stringify(DEFAULT_SITES.rules))
+      }
     };
   }
 
@@ -438,14 +452,15 @@
 
   /* 兼容 1.5 及更早的扁平格式 {level, banks}：迁移成两侧同一套；level 0 变总开关关闭 */
   function sanitize(o) {
+    // 全新安装 / 读取失败：完整走默认设置（含白名单站点）
+    if (!o || typeof o !== 'object') return defaultSettings();
     var d = defaultSettings();
     var out = {
       on: true, dir: 'auto', badge: false,
       zh: { level: d.zh.level, banks: d.zh.banks.slice() },
       en: { level: d.en.level, banks: d.en.banks.slice() },
-      sites: { mode: 'all', rules: [] }
+      sites: { mode: 'all', rules: [] }   // 有旧数据但缺 sites 字段（1.5 老用户）：保持全站，别悄悄改成白名单
     };
-    if (!o || typeof o !== 'object') return out;
 
     if (o.zh || o.en) {
       out.zh = cleanSide(o.zh, d.zh);

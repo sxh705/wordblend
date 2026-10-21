@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wordblend 上架提交助手</title>
+<style>
+  :root{
+    --bg:#f6f7f5; --panel:#fff; --ink:#141a17; --muted:#6b756f;
+    --line:#e2e6e2; --brand:#0e7a55; --brand-soft:#e8f5ef;
+    --dang:#b4451f; --dang-soft:#fbeee9; --warn:#8a6a12; --warn-soft:#fdf6e3;
+    --ok:#0e7a55;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:sticky; top:0; z-index:20; background:rgba(246,247,245,.92);
+    backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  }
+  .hwrap{max-width:1180px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+  .brandmark{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:-.01em}
+  .brandmark .sq{width:26px;height:26px;border-radius:7px;background:#0f1317;display:grid;place-items:center}
+  .brandmark .sq::after{content:"F";color:#3ddc97;font-weight:800;font-size:15px;line-height:1}
+  .sub{color:var(--muted); font-size:13px; font-weight:400; margin-left:6px}
+  .grow{flex:1}
+  .jump{display:flex; gap:8px}
+  .jump a{
+    text-decoration:none; color:var(--brand); border:1px solid var(--brand);
+    padding:6px 13px; border-radius:8px; font-size:13px; font-weight:600; white-space:nowrap;
+    transition:.15s;
+  }
+  .jump a:hover{background:var(--brand); color:#fff}
+  .prog{display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--muted); min-width:180px}
+  .bar{flex:1; height:6px; background:var(--line); border-radius:99px; overflow:hidden; min-width:90px}
+  .bar > i{display:block; height:100%; width:0%; background:var(--brand); border-radius:99px; transition:width .3s}
+
+  .layout{max-width:1180px; margin:0 auto; padding:26px 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:34px; align-items:start}
+  nav.toc{position:sticky; top:78px; font-size:13.5px}
+  nav.toc .grp{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin:18px 0 6px 2px; font-weight:700}
+  nav.toc .grp:first-child{margin-top:0}
+  nav.toc a{display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:6px; color:var(--ink); text-decoration:none; line-height:1.35}
+  nav.toc a:hover{background:#eceeec}
+  nav.toc a.done{color:var(--muted)}
+  nav.toc a.done .dot{background:var(--brand); border-color:var(--brand)}
+  .dot{width:7px;height:7px;border-radius:99px;border:1.5px solid #c2c9c4; flex:0 0 auto}
+
+  h2.sec{font-size:13px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:44px 0 14px; font-weight:700}
+  h2.sec:first-of-type{margin-top:0}
+
+  .step{background:var(--panel); border:1px solid var(--line); border-radius:14px; margin:0 0 14px; overflow:hidden; scroll-margin-top:86px}
+  .step.done{opacity:.62}
+  .shead{display:flex; align-items:flex-start; gap:12px; padding:15px 18px 13px; cursor:pointer; user-select:none}
+  .shead input{margin:3px 0 0; width:16px; height:16px; accent-color:var(--brand); cursor:pointer; flex:0 0 auto}
+  .stitle{flex:1; font-weight:650; font-size:15.5px; letter-spacing:-.005em}
+  .stitle small{display:block; font-weight:400; color:var(--muted); font-size:13px; margin-top:2px; letter-spacing:0}
+  .tag{font-size:11px; font-weight:700; padding:2.5px 8px; border-radius:99px; white-space:nowrap; margin-top:2px}
+  .t-auto{background:var(--brand-soft); color:var(--ok); border:1px solid #c6e9d8}
+  .t-you{background:var(--warn-soft); color:var(--warn); border:1px solid #f0e2b8}
+  .t-only{background:var(--dang-soft); color:var(--dang); border:1px solid #f2d5c9}
+  .sbody{padding:0 18px 18px 46px; display:none}
+  .step.open .sbody{display:block}
+  .sbody p{margin:0 0 10px}
+  .sbody ol,.sbody ul{margin:0 0 12px; padding-left:20px}
+  .sbody li{margin:3px 0}
+
+  .field{border:1px solid var(--line); border-radius:9px; margin:10px 0; background:#fbfcfb}
+  .fhead{display:flex; align-items:center; gap:10px; padding:8px 11px; border-bottom:1px solid var(--line)}
+  .fname{font-size:12.5px; font-weight:700; color:var(--muted); letter-spacing:.02em; flex:1}
+  .copy{
+    border:1px solid #cfd6d1; background:#fff; color:var(--ink); font-size:12px; font-weight:600;
+    padding:4px 11px; border-radius:6px; cursor:pointer; transition:.14s; font-family:inherit;
+  }
+  .copy:hover{border-color:var(--brand); color:var(--brand)}
+  .copy.ok{background:var(--brand); border-color:var(--brand); color:#fff}
+  .fbody{padding:10px 12px; font-size:13.5px; line-height:1.7; white-space:pre-wrap; word-break:break-word; max-height:230px; overflow:auto; color:#26302b}
+  .fbody.url{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px}
+
+  .shot{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:12px 0}
+  .shot figure{margin:0}
+  .shot img{width:100%; border:1px solid var(--line); border-radius:7px; display:block; background:#fff}
+  .shot figcaption{font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.3; word-break:break-all}
+  .shot .dark{background:#0f1317; padding:14px; display:grid; place-items:center}
+  .shot .dark img{width:56%; border:0; background:transparent}
+
+  .note{border-left:3px solid #cfd6d1; padding:2px 0 2px 12px; color:var(--muted); font-size:13.5px; margin:12px 0}
+  .warn{border-left:3px solid var(--dang); background:var(--dang-soft); padding:9px 13px; border-radius:0 7px 7px 0; font-size:13.5px; margin:12px 0}
+  .warn b{color:var(--dang)}
+  .tip{border-left:3px solid var(--brand); background:var(--brand-soft); padding:9px 13px; border-radius:0 7px 7px 0; font-size:13.5px; margin:12px 0}
+  code{background:#eceeec; padding:1px 5px; border-radius:4px; font-size:12.5px; font-family:ui-monospace,Menlo,Consolas,monospace}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px; margin:10px 0}
+  th,td{text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700}
+  td code{font-size:12px}
+
+  footer{max-width:1180px; margin:0 auto; padding:0 24px 60px; color:var(--muted); font-size:12.5px}
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr; gap:18px}
+    nav.toc{display:none}
+    .shot{grid-template-columns:repeat(2,1fr)}
+    .sbody{padding-left:18px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div class="brandmark"><span class="sq"></span>Wordblend<span class="sub">上架提交助手 v2.2.0</span></div>
+    <div class="grow"></div>
+    <div class="prog"><span id="pnum">0 / 0</span><div class="bar"><i id="pbar"></i></div></div>
+    <div class="jump">
+      <a href="https://chrome.google.com/webstore/devconsole" target="_blank" rel="noopener">Chrome 后台 ↗</a>
+      <a href="https://partner.microsoft.com/dashboard/microsoftedge" target="_blank" rel="noopener">Edge 后台 ↗</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="toc">
+  <div class="grp">准备</div>
+  <a href="#s0"><span class="dot"></span>素材清点</a>
+  <div class="grp">Chrome</div>
+  <a href="#c1"><span class="dot"></span>1 注册 + $5</a>
+  <a href="#c2"><span class="dot"></span>2 两步验证</a>
+  <a href="#c3"><span class="dot"></span>3 账号页</a>
+  <a href="#c4"><span class="dot"></span>4 上传 zip</a>
+  <a href="#c5"><span class="dot"></span>5 商店信息</a>
+  <a href="#c6"><span class="dot"></span>6 隐私权实务</a>
+  <a href="#c7"><span class="dot"></span>7 分发</a>
+  <a href="#c8"><span class="dot"></span>8 提交审核</a>
+  <div class="grp">Edge</div>
+  <a href="#e1"><span class="dot"></span>1 注册计划</a>
+  <a href="#e2"><span class="dot"></span>2 个人资料</a>
+  <a href="#e3"><span class="dot"></span>3 创建 + 上传</a>
+  <a href="#e4"><span class="dot"></span>4 四页内容</a>
+  <a href="#e5"><span class="dot"></span>5 提交</a>
+  <div class="grp">收尾</div>
+  <a href="#f1"><span class="dot"></span>卡点速查</a>
+  <a href="#f2"><span class="dot"></span>过审之后</a>
+</nav>
+
+<main>
+
+<h2 class="sec">准备</h2>
+
+<section class="step" id="s0">
+  <div class="shead">
+    <input type="checkbox" data-k="s0">
+    <div class="stitle">素材清点<small>以下几样已在磁盘上备好，不用再造</small></div>
+    <span class="tag t-auto">已完成</span>
+  </div>
+  <div class="sbody">
+    <div class="tip"><b>上传时只需要一个目录：</b><code>dist\submit-pack\</code> —— zip、3 张截图、2 个图标、2 张宣传图已经全部拷进去了，不用再翻目录找文件。</div>
+    <table>
+      <tr><th>用途</th><th>submit-pack 里的文件</th></tr>
+      <tr><td>扩展包（两个商店共用）</td><td><code>Wordblend-v2.2.0.zip</code></td></tr>
+      <tr><td>Chrome 商店图标 128×128</td><td><code>store-icon-128.png</code></td></tr>
+      <tr><td>Edge 商店图标 300×300</td><td><code>store-icon-300.png</code></td></tr>
+      <tr><td>截图 1280×800 ×3</td><td><code>01-zh.png</code> <code>02-en.png</code> <code>03-popup.png</code></td></tr>
+      <tr><td>宣传图 440×280 / 1400×560</td><td><code>promo-440x280.png</code> <code>promo-1400x560.png</code></td></tr>
+    </table>
+    <div class="tip">截图已核对为 <b>24-bit RGB 无透明通道</b> —— 带 alpha 的 PNG 会被商店表单直接拒收，这是 macOS 截图的经典坑。</div>
+    <div class="shot">
+      <figure><img src="screenshots/01-zh.png" alt=""><figcaption>01-zh.png<br>封面，中文页夹英文</figcaption></figure>
+      <figure><img src="screenshots/02-en.png" alt=""><figcaption>02-en.png<br>英文页夹中文</figcaption></figure>
+      <figure><img src="screenshots/03-popup.png" alt=""><figcaption>03-popup.png<br>设置面板</figcaption></figure>
+      <figure class="dark"><img src="screenshots/store-icon-128.png" alt=""><figcaption>store-icon-128</figcaption></figure>
+    </div>
+    <div class="note">把 <code>dist\submit-pack</code> 文件夹拖到桌面会更顺手 —— 上传弹窗里一次就能选完。</div>
+  </div>
+</section>
+
+<h2 class="sec">Chrome Web Store</h2>
+
+<section class="step" id="c1">
+  <div class="shead">
+    <input type="checkbox" data-k="c1">
+    <div class="stitle">1. 注册开发者 + 支付 $5<small>一次性费用，不是年费；一个账号管所有扩展</small></div>
+    <span class="tag t-only">需你本人</span>
+  </div>
+  <div class="sbody">
+    <ol>
+      <li>打开 <a href="https://chrome.google.com/webstore/devconsole" target="_blank" rel="noopener">chrome.google.com/webstore/devconsole</a></li>
+      <li>登录 Google 账号 —— <b>账号邮箱注册后不可更改</b>，建议用专用账号</li>
+      <li>同意开发者协议 → 支付 <b>$5</b>（Visa / MasterCard 双币卡）</li>
+    </ol>
+    <div class="warn">
+      <b>这一步最容易卡住：</b>国内双币卡被 Google Payments 风控拒付，报 <code>OR-CCSEH-05</code> 或「无法完成交易」。<br>
+      依次尝试：① 换一张别家发卡行的卡 ② 关代理直连 / 或反过来挂美区节点 ③ 等 24 小时再试 ④ 去 <a href="https://support.google.com/payments" target="_blank" rel="noopener">payments 支持</a> 提工单。
+    </div>
+    <div class="note">新账号会显示「已发布 0 个扩展程序（限额为 2 个）」，这是常规限制，过审后自动扩容，不用处理。</div>
+  </div>
+</section>
+
+<section class="step" id="c2">
+  <div class="shead">
+    <input type="checkbox" data-k="c2">
+    <div class="stitle">2. 开启两步验证<small>没开就完全不能发布，报错也不会说原因</small></div>
+    <span class="tag t-only">需你本人</span>
+  </div>
+  <div class="sbody">
+    <p>后台顶部若出现黄色提示条「需要开启两步验证」，点它就能到这一页；也可以直接打开 <a href="https://myaccount.google.com/security" target="_blank" rel="noopener">Google 账号安全页</a> 开启。</p>
+  </div>
+</section>
+
+<section class="step" id="c3">
+  <div class="shead">
+    <input type="checkbox" data-k="c3">
+    <div class="stitle">3. 补全「账号」页<small>不填这两项，提交时只报「必须提供联系电子邮箱地址」，却不告诉你在哪填</small></div>
+    <span class="tag t-only">需你本人</span>
+  </div>
+  <div class="sbody">
+    <table>
+      <tr><th>字段</th><th>填什么</th><th>后果</th></tr>
+      <tr><td>联系邮箱</td><td>常用邮箱 → 收验证邮件 → 点链接</td><td>不验证就无法提交</td></tr>
+      <tr><td>发布者名称</td><td><code>Wordblend</code> 或 <code>sxh705</code></td><td>显示在扩展名下方</td></tr>
+      <tr><td>交易者身份</td><td><b>非交易者 Non-trader</b></td><td>选「交易者」会把你的地址与电话公开给欧盟用户</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="step" id="c4">
+  <div class="shead">
+    <input type="checkbox" data-k="c4">
+    <div class="stitle">4. 新增项目、上传 zip<small>拖入 dist\Wordblend-v2.2.0.zip</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <p>右上角 <b>「新增项目 / Add new item」</b> → 拖入 zip。</p>
+    <div class="warn">上传后会弹橙色警告「使用了广泛的主机权限，将进行深度审核」—— <b>这是预期的，不要为了消警告去削减权限</b>。功能就靠全站读取文本，削了扩展就废了，且审核员能看出来。</div>
+  </div>
+</section>
+
+<section class="step" id="c5">
+  <div class="shead">
+    <input type="checkbox" data-k="c5">
+    <div class="stitle">5. 商店发布信息<small>名称 / 说明 / 分类 / 图片</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <div class="field"><div class="fhead"><span class="fname">名称</span><button class="copy">复制</button></div><div class="fbody">Wordblend — 中英混排阅读</div></div>
+    <div class="field"><div class="fhead"><span class="fname">简短说明（≤132 字符）</span><button class="copy">复制</button></div><div class="fbody">中文网页夹英文词、英文网页夹中文词，点词看释义。18 个离线词库、1~10 档强度、站点黑白名单，全程不联网。</div></div>
+    <div class="field"><div class="fhead"><span class="fname">详细说明</span><button class="copy">复制</button></div><div class="fbody">读英文资料最费劲的地方，不是整段看不懂，而是每隔两句卡一个词。切出去查、再切回来，节奏断了，读三行就放弃。
+
+Wordblend 不翻译整页，它只替换一部分词。
+
+· 中文网页 → 夹英文词
+  熟悉的语境托着你，生词自然嵌在句子里。同一个词在不同句子里反复出现，比背单词表记得牢。
+
+· 英文网页 → 夹中文词
+  卡住的地方直接变成中文，阅读不再中断，同时保留完整的英文原句和语法结构。
+
+· 点一下就能往回查
+  点被替换的词，弹出音标、中文释义、同根词、近义词、反义词。看完点空白处关闭，不打断阅读。
+
+■ 主要功能
+
+· 双向替换：中文页夹英文、英文页夹中文，两侧各有独立的强度和词库
+· 强度 1~10：1 最密（几乎每句都有），10 最淡（只偶尔标注一个）；英→中方向按段落分配，长文从头到尾密度一致
+· 难度分层：英→中优先换生僻词，最常用的那批词按档位逐步退出，不会出现 "base → 卑鄙的" 这种把句子搞得更难的替换
+· 18 个词库：基础（四级/六级）、进阶（考研/雅思/托福/GRE）、专业（计算机/医学/法律/经济）、垂直（新闻/科技/商务/学术）
+· 站点黑白名单：默认仅在 V2EX / 知乎 / 贴吧生效，装完不打扰别的站；随时可切成全部网站 / 黑名单，支持 *.example.com 通配，任何站可一键加入或移出
+· 按站锁语言：自动判定不准时，把某个站固定成中文页或英文页
+· 不打断页面：只改文字，不动结构、样式和链接；按钮照常点、链接照常跳
+· 跨标签页同步：在一个标签页调好，其他标签页立即生效
+
+■ 隐私
+
+· 不联网：词典全部打包在扩展里，运行时不发出任何请求
+· 不采集：没有统计、没有埋点、没有账号
+· 不上传：页面文字只在你的浏览器内存里处理，不保存、不发送
+· 断网也能用：功能完全不受影响
+
+■ 适合谁
+
+· 想过六级/考研/雅思托福，但读原版文章总是读不下去的人
+· 每天要读英文技术文档、论文、Release Notes 的开发者
+· 想在一中文环境里保持英文语感的人
+· 已经认识基础词，想在被动词汇里"泡"出语感的人（词库可只留进阶和专业）
+
+■ 已知限制
+
+· 中文一词多义时可能选错义项（例如 match 有时会给出"火柴"），点开卡片能看到替换前的中文，判断得出来
+· 词典是离线的，覆盖面不及在线翻译；生僻专有名词不会被替换
+· 只处理普通文本节点，图片里的文字、Canvas、部分富文本编辑器不处理
+
+开源项目，欢迎提 issue：https://github.com/sxh705/wordblend</div></div>
+    <table>
+      <tr><th>字段</th><th>选什么</th></tr>
+      <tr><td>类别</td><td>教育（Education）</td></tr>
+      <tr><td>语言</td><td>中文（简体）；可再添加 English</td></tr>
+      <tr><td>商店图标</td><td><code>store-icon-128.png</code></td></tr>
+      <tr><td>截图顺序</td><td>01-zh → 02-en → 03-popup（第一张是封面）</td></tr>
+      <tr><td>小型宣传图</td><td><code>promo-440x280.png</code></td></tr>
+    </table>
+    <div class="field"><div class="fhead"><span class="fname">英文版简短说明（备用）</span><button class="copy">复制</button></div><div class="fbody">Replace some words on a page with the other language — Chinese on English sites, English on Chinese sites. Offline.</div></div>
+  </div>
+</section>
+
+<section class="step" id="c6">
+  <div class="shead">
+    <input type="checkbox" data-k="c6">
+    <div class="stitle">6. 隐私权实务<small>决定审核快慢的一页，审核员主要看这里</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <div class="field"><div class="fhead"><span class="fname">单一用途说明</span><button class="copy">复制</button></div><div class="fbody">把网页中的一部分词替换成另一种语言（中 ↔ 英），帮助用户在阅读中自然积累词汇；附带点词查释义。</div></div>
+    <div class="field"><div class="fhead"><span class="fname">storage 权限理由</span><button class="copy">复制</button></div><div class="fbody">保存强度、词库选择、站点黑白名单，并在标签页之间同步设置。只存这些配置，不存浏览内容。</div></div>
+    <div class="field"><div class="fhead"><span class="fname">host_permissions 理由</span><button class="copy">复制</button></div><div class="fbody">内容脚本需要在页面上读取并替换文字。扩展的功能就是在任意网页上把部分词换成另一种语言，无法预知用户会读哪些站，因此需要全站访问。只处理文本节点，不读取表单、密码或 cookie。</div></div>
+    <table>
+      <tr><th>字段</th><th>选什么</th></tr>
+      <tr><td>远程代码</td><td><b>否，我未使用远程代码</b></td></tr>
+      <tr><td>数据使用</td><td><b>不收集用户数据</b>，三个勾选项全部选「不」</td></tr>
+    </table>
+    <div class="field"><div class="fhead"><span class="fname">隐私政策网址</span><button class="copy">复制</button></div><div class="fbody url">https://github.com/sxh705/wordblend/blob/master/docs/store/privacy.md</div></div>
+  </div>
+</section>
+
+<section class="step" id="c7">
+  <div class="shead">
+    <input type="checkbox" data-k="c7">
+    <div class="stitle">7. 分发<small>可见性 / 地区 / 延迟发布</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <table>
+      <tr><th>字段</th><th>选什么</th></tr>
+      <tr><td>可见性</td><td>公开（Public）</td></tr>
+      <tr><td>定价</td><td>免费</td></tr>
+      <tr><td>地区</td><td>所有地区</td></tr>
+      <tr><td>延迟发布</td><td><b>建议勾选</b> —— 过审后不自动上线，30 天内你自己点发布，方便先发 V2EX 帖再掐点上线</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="step" id="c8">
+  <div class="shead">
+    <input type="checkbox" data-k="c8">
+    <div class="stitle">8. 提交审核<small>卡住就点「我为什么不能提交？」</small></div>
+    <span class="tag t-only">建议你本人点</span>
+  </div>
+  <div class="sbody">
+    <div class="field"><div class="fhead"><span class="fname">测试说明（给审核员）</span><button class="copy">复制</button></div><div class="fbody">默认为保守模式：仅在 v2ex.com、zhihu.com、tieba.baidu.com 三个站生效。
+请打开 https://v2ex.com 或 https://www.zhihu.com 的任意帖子页，即可看到部分词被替换成英文；
+点击被替换的词弹出释义卡片，点空白处关闭。
+弹窗「站点」页可切换为所有网站 / 黑名单，任何站可一键加入或移出白名单。
+关闭右上角总开关即恢复原文。无需登录、无需配置。
+仓库：https://github.com/sxh705/wordblend</div></div>
+    <div class="tip">提交按钮点不动时，点页面上的 <b>「我为什么不能提交？」</b>，它会列出全部未完成项，比逐页翻快得多。</div>
+    <div class="note">审核 1~3 天；新账号 + 全站权限会进深度审核队列，等两三周也正常。<b>不要重复提交</b>，重提只会重新排队。</div>
+  </div>
+</section>
+
+<h2 class="sec">Microsoft Edge 加载项</h2>
+
+<section class="step" id="e1">
+  <div class="shead">
+    <input type="checkbox" data-k="e1">
+    <div class="stitle">1. 注册 Edge 计划<small>完全免费，个人账号即可</small></div>
+    <span class="tag t-only">需你本人</span>
+  </div>
+  <div class="sbody">
+    <ol>
+      <li>打开 <a href="https://partner.microsoft.com/dashboard/microsoftedge" target="_blank" rel="noopener">partner.microsoft.com/dashboard/microsoftedge</a></li>
+      <li>登录 —— <b>Microsoft 账号</b>（outlook/hotmail）最顺；用 GitHub 账号授权也行，之后仍要绑一个微软账号</li>
+      <li>账户类型选 <b>个人 Individual</b> → 同意 Edge 开发者协议</li>
+    </ol>
+  </div>
+</section>
+
+<section class="step" id="e2">
+  <div class="shead">
+    <input type="checkbox" data-k="e2">
+    <div class="stitle">2. 填个人资料<small>有一个必踩的坑：省份不能写中文</small></div>
+    <span class="tag t-only">需你本人</span>
+  </div>
+  <div class="sbody">
+    <table>
+      <tr><th>字段</th><th>填什么</th></tr>
+      <tr><td>姓名</td><td>真实姓名（与证件一致）</td></tr>
+      <tr><td>省 / 州</td><td><b style="color:#b4451f">英文或拼音缩写</b>：北京 → <code>Beijing</code> 或 <code>BJ</code>，上海 → <code>Shanghai</code> / <code>SH</code></td></tr>
+      <tr><td>城市</td><td>拼音，如 <code>Beijing</code></td></tr>
+      <tr><td>邮编</td><td>6 位数字</td></tr>
+      <tr><td>电话</td><td><code>+86</code> 开头</td></tr>
+    </table>
+    <div class="warn">省份写「北京市」会一直报错，而且<b>不告诉你原因</b> —— 这是 Partner Center 最典型的卡点。</div>
+    <div class="note">提交后等邮箱验证，有时 10 分钟才到，先翻垃圾邮件箱再重试。</div>
+  </div>
+</section>
+
+<section class="step" id="e3">
+  <div class="shead">
+    <input type="checkbox" data-k="e3">
+    <div class="stitle">3. 创建扩展、上传同一个 zip<small>Workspaces → Edge → Create new extension</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <p>拖入 <code>dist\Wordblend-v2.2.0.zip</code>，包不用改。上传后进入 <b>Extension overview</b>，按左侧菜单走完四页。</p>
+  </div>
+</section>
+
+<section class="step" id="e4">
+  <div class="shead">
+    <input type="checkbox" data-k="e4">
+    <div class="stitle">4. 四页内容<small>Availability / Properties / Privacy / Store listing</small></div>
+    <span class="tag t-you">你点几下</span>
+  </div>
+  <div class="sbody">
+    <table>
+      <tr><th>页面</th><th>填什么</th></tr>
+      <tr><td>Availability</td><td>可见性 <code>Public</code>；市场至少勾美国 + 中国</td></tr>
+      <tr><td>Properties</td><td>类别 <code>Education</code>；隐私政策 URL 同上；应用内购买 = No</td></tr>
+      <tr><td>Privacy</td><td>用途说明、两条权限理由、远程代码 = No、数据使用 = 不收集（内容同 Chrome 第 6 步，直接复用）</td></tr>
+      <tr><td>Store listing</td><td>每种语言一份：名称、简短说明、详细说明、截图 3 张、logo 用 <code>store-icon-300.png</code>、搜索词</td></tr>
+    </table>
+    <div class="field"><div class="fhead"><span class="fname">Edge 搜索词（最多 7 个）</span><button class="copy">复制</button></div><div class="fbody">中英混排, 背单词, 英语阅读, 词汇, 沉浸式翻译, 英文阅读辅助, vocabulary</div></div>
+    <div class="note">Edge 的<b>名称和描述读自 manifest，页面上是只读的</b>。我们 manifest 写的是「Wordblend — 中英混排阅读」，符合要求，改不了也不用改。</div>
+  </div>
+</section>
+
+<section class="step" id="e5">
+  <div class="shead">
+    <input type="checkbox" data-k="e5">
+    <div class="stitle">5. 认证说明 + 发布<small>等 1~7 个工作日</small></div>
+    <span class="tag t-only">建议你本人点</span>
+  </div>
+  <div class="sbody">
+    <div class="field"><div class="fhead"><span class="fname">Certification notes（给审核员）</span><button class="copy">复制</button></div><div class="fbody">Conservative by default: only v2ex.com, zhihu.com and tieba.baidu.com are affected.
+Open any post on https://v2ex.com or https://www.zhihu.com to see some words replaced with English.
+Click a replaced word to see the dictionary card; click elsewhere to close it.
+The popup's "Sites" tab switches to all-sites or block-list mode; any site can be added or removed in one click.
+Turn off the toggle at the top right of the popup to restore the original page.
+Fully offline — no network requests, no data collection.
+Repo: https://github.com/sxh705/wordblend</div></div>
+  </div>
+</section>
+
+<h2 class="sec">收尾</h2>
+
+<section class="step" id="f1">
+  <div class="shead">
+    <input type="checkbox" data-k="f1">
+    <div class="stitle">卡点速查表<small>卡住了先在这找</small></div>
+    <span class="tag t-auto">随时可查</span>
+  </div>
+  <div class="sbody">
+    <table>
+      <tr><th>症状</th><th>原因 / 处理</th></tr>
+      <tr><td>提交报「必须提供联系电子邮箱地址」</td><td>Account 页没验证邮箱</td></tr>
+      <tr><td>提交按钮灰着</td><td>点「我为什么不能提交？」看清单</td></tr>
+      <tr><td><code>OR-CCSEH-05</code> / 支付失败</td><td>Google Payments 风控，换卡 / 换网络 / 等 24h</td></tr>
+      <tr><td>上传 zip 报「清单文件缺失」</td><td>zip 里套了一层文件夹；我们的包已核对，manifest 在根目录</td></tr>
+      <tr><td>上传截图报格式错误</td><td>PNG 带 alpha；我们的截图已核对为 24-bit RGB</td></tr>
+      <tr><td>Partner Center 省份一直报错</td><td>填了中文，改拼音</td></tr>
+      <tr><td>Edge 名称栏灰的改不了</td><td>manifest 字段只读，正常</td></tr>
+      <tr><td>被拒「权限说明不清楚」</td><td>host 理由别缩写，复制第 6 步那段完整文字</td></tr>
+      <tr><td>被拒「功能与描述不符」</td><td>描述里别写没实现的功能；照抄文案即可</td></tr>
+      <tr><td>审核超两周</td><td>深度审核队列，正常，别重提</td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="step" id="f2">
+  <div class="shead">
+    <input type="checkbox" data-k="f2">
+    <div class="stitle">过审之后<small>把链接发我，剩下的我改</small></div>
+    <span class="tag t-you">交给我</span>
+  </div>
+  <div class="sbody">
+    <ol>
+      <li>把两个商店链接补进 <code>README.md</code> 顶部与 <code>docs/store/listing.md</code></li>
+      <li>GitHub Release 补说明</li>
+      <li>V2EX 发帖（草稿在 <code>docs/v2ex-post.md</code>，链接位留空，回填即发）</li>
+      <li>后续更新：改 <code>build.py</code> 的 <code>VERSION</code> → <code>cd popup &amp;&amp; pnpm build</code> → <code>python build.py</code> → 两个后台各点「上传新包」</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>勾选进度保存在本地浏览器（localStorage），关掉页面也不会丢。<br>
+完整文字版：<code>docs/store/register-steps.md</code> · 上架文案：<code>docs/store/listing.md</code></footer>
+
+<script>
+(function(){
+  var KEY='wb-submit-progress-v1';
+  var saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ saved={}; }
+
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('input[data-k]'));
+  var steps=Array.prototype.slice.call(document.querySelectorAll('.step'));
+
+  // 默认全部展开，之前的勾选状态回填
+  steps.forEach(function(s){ s.classList.add('open'); });
+
+  function sync(){
+    var done=0;
+    boxes.forEach(function(b){
+      var sec=b.closest('.step');
+      var id=sec.id;
+      if(b.checked){ sec.classList.add('done'); } else { sec.classList.remove('done'); }
+      if(b.checked) done++;
+      var link=document.querySelector('nav.toc a[href="#'+id+'"]');
+      if(link){ link.classList.toggle('done', b.checked); }
+    });
+    var total=boxes.length;
+    document.getElementById('pnum').textContent=done+' / '+total;
+    document.getElementById('pbar').style.width=(total?done/total*100:0)+'%';
+  }
+
+  boxes.forEach(function(b){
+    var k=b.getAttribute('data-k');
+    if(saved[k]) b.checked=true;
+    b.addEventListener('change',function(){
+      saved[k]=b.checked;
+      try{ localStorage.setItem(KEY,JSON.stringify(saved)); }catch(e){}
+      sync();
+    });
+    // 点标题栏也能切换展开（但不影响勾选）
+    var head=b.closest('.shead');
+    head.addEventListener('click',function(ev){
+      if(ev.target===b) return;
+      b.closest('.step').classList.toggle('open');
+    });
+  });
+  sync();
+
+  // 复制按钮
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var text=btn.closest('.field').querySelector('.fbody').textContent;
+      function ok(){
+        var old=btn.textContent;
+        btn.textContent='已复制'; btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent=old; btn.classList.remove('ok'); },1400);
+      }
+      if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(ok, function(){ fallback(text, ok); });
+      } else { fallback(text, ok); }
+    });
+  });
+  function fallback(text,cb){
+    var ta=document.createElement('textarea');
+    ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); cb(); }catch(e){ alert('复制失败，请手动选中文字复制'); }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
+</body>
+</html>

@@ -18,7 +18,7 @@ BANKS = 'data/banks_raw.txt'
 BASIC = 'data/basic_detail.json'      # 原词库缺失的高频基础词（人工补齐）
 OUT = 'dist'
 EXT = os.path.join(OUT, 'ext')
-VERSION = '2.1.0'
+VERSION = '2.2.0'
 NAME = 'Wordblend'
 
 core = open(SRC, encoding='utf-8').read()

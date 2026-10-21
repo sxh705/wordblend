@@ -52,7 +52,7 @@ Wordblend 不翻译整页，它只替换一部分词。
 · 强度 1~10：1 最密（几乎每句都有），10 最淡（只偶尔标注一个）；英→中方向按段落分配，长文从头到尾密度一致
 · 难度分层：英→中优先换生僻词，最常用的那批词按档位逐步退出，不会出现 "base → 卑鄙的" 这种把句子搞得更难的替换
 · 18 个词库：基础（四级/六级）、进阶（考研/雅思/托福/GRE）、专业（计算机/医学/法律/经济）、垂直（新闻/科技/商务/学术）
-· 站点黑白名单：全部网站 / 仅白名单 / 黑名单，支持 *.example.com 通配
+· 站点黑白名单：默认仅在 V2EX / 知乎 / 贴吧生效，装完不打扰别的站；随时可切成全部网站 / 黑名单，支持 *.example.com 通配，任何站可一键加入或移出
 · 按站锁语言：自动判定不准时，把某个站固定成中文页或英文页
 · 不打断页面：只改文字，不动结构、样式和链接；按钮照常点、链接照常跳
 · 跨标签页同步：在一个标签页调好，其他标签页立即生效
@@ -101,7 +101,7 @@ FEATURES
 · 10 intensity levels — level 1 densest, level 10 a rare annotation; English→Chinese density is allocated per paragraph, so long articles stay even
 · Rarity-first selection: uncommon words go first, the most common ones drop out as you lower the intensity
 · 18 offline word banks (CET-4/6, postgraduate, IELTS, TOEFL, GRE, CS, medical, legal, business, news, academic)
-· Site allow-list / block-list, wildcard hosts supported
+· Site rules: conservative by default — only V2EX / Zhihu / Baidu Tieba are touched out of the box; switch to all sites or a block-list anytime, wildcards supported, one click to add or remove any site
 · Per-site language lock for pages where detection gets it wrong
 · Only text is touched — layout, styles and links are untouched
 · Settings sync across tabs

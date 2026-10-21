@@ -1,13 +1,17 @@
 # 上架流程：Chrome Web Store + Microsoft Edge 加载项
 
-> 结论先说：**两个商店都不需要审核前付费**（Chrome 一次性 $5，Edge 免费），但**都需要你本人的账号做实名/邮箱验证**，这一步我没法替你点。其余材料已经全部备好。
+> 结论先说：**两个商店都不需要审核前付费**（Chrome 一次性 $5，Edge 免费），但**都需要你本人的账号做实名/邮箱验证**，这一步没法替你点。其余材料已经全部备好。
+>
+> 👉 要照着一步步点的话，看 **[register-steps.md](register-steps.md)**（逐屏操作 + 卡点速查表 + 自动/手动标注）；本文是简版概览。
 
 ## 0. 已经准备好的东西
 
 | 项目 | 位置 | 状态 |
 |---|---|---|
-| 扩展包（MV3） | `dist/Wordblend-v2.1.0.zip` | ✅ 可直接上传 |
+| 扩展包（MV3） | `dist/Wordblend-v2.2.0.zip` | ✅ 可直接上传 |
 | 图标 16/32/48/128 | `dist/ext/icon*.png` | ✅ |
+| 商店图标 128（96 图形 + 16 边距） | `docs/store/screenshots/store-icon-128.png` | ✅ |
+| 商店图标 300×300（Edge） | `docs/store/screenshots/store-icon-300.png` | ✅ |
 | 截图 1280×800 ×3 | `docs/store/screenshots/` | ✅ |
 | 宣传图 440×280 / 1400×560 | `docs/store/screenshots/` | ✅ |
 | 商店文案（中/英） | `docs/store/listing.md` | ✅ |
@@ -31,7 +35,7 @@
    - 同一个页面还要选「交易者 / 非交易者」。个人免费扩展选**非交易者**（不需要公示地址）
    - 不填这两项，提交时只会报「必须提供联系电子邮箱地址」，且不会告诉你在哪填
 3. **新建条目**
-   - 「内容」→「上传新内容」→ 选 `dist/Wordblend-v2.1.0.zip`
+   - 「内容」→「上传新内容」→ 选 `dist/Wordblend-v2.2.0.zip`
 4. **填写商品详情**（照 `docs/store/listing.md` 复制）
    - 名称、简短说明、详细说明、分类=教育
    - 截图 3 张、小宣传图 440×280
@@ -41,7 +45,7 @@
    - 权限理由：见 `listing.md` 表格，两条都填
    - 数据使用：**不收集用户数据**，三个勾选项全选「不」
    - 隐私政策 URL：填隐私政策的公开地址（GitHub 仓库里 `docs/store/privacy.md` 的网页地址即可，例如
-     `https://github.com/sxh705/wordblend/blob/main/docs/store/privacy.md`）
+     `https://github.com/sxh705/wordblend/blob/master/docs/store/privacy.md`）
    - 远程代码：选「否，我未使用远程代码」
 6. **提交审核**
    - 「测试说明」里写一句：`安装后打开任意中文或英文网页即可看到替换效果；点击被替换的词弹出释义卡片。无需登录。`
@@ -62,7 +66,7 @@
 
 1. 打开 <https://partner.microsoft.com/dashboard/microsoftedge>
 2. 用**微软账号**注册 Edge 开发者（个人即可，免费，需填真实姓名/地址，要过身份验证）
-3. 「新建扩展」→ 上传 `dist/Wordblend-v2.1.0.zip`
+3. 「新建扩展」→ 上传 `dist/Wordblend-v2.2.0.zip`
 4. 填写商店信息：名称、简短说明、详细说明、分类、语言 —— 与 Chrome 用同一份文案
 5. 上传截图（1280×800）与商店图标 300×300（可用 128 图标放大，或让我再生成一张）
 6. 隐私政策 URL 同上
@@ -75,7 +79,7 @@
 ## 3. 审核通过之后
 
 - 把两个商店链接补进 `README.md` 顶部和 `docs/store/listing.md`
-- GitHub Release 里挂 `dist/Wordblend-v2.1.0.zip`，方便不想走商店的人
+- GitHub Release 里挂 `dist/Wordblend-v2.2.0.zip`，方便不想走商店的人
 - V2EX 帖子里同时放商店链接和 GitHub 链接（帖子里只放 GitHub 会显得像半成品）
 
 ## 4. 版本更新流程

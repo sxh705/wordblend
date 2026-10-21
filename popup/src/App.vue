@@ -9,7 +9,8 @@ import {
 } from './store.js'
 
 const cfg = reactive(normalize(null))
-const tab = ref('zh')
+/* 默认落在「站点」页：新装用户进来先决定在哪儿生效，再去调强度和词库 */
+const tab = ref('sites')
 const ready = ref(false)
 const host = ref('—')
 const stats = ref(null)
@@ -22,6 +23,30 @@ const DIRS = [
   { id: 'auto', name: '自动' },
   { id: 'zh2en', name: '中文页' },
   { id: 'en2zh', name: '英文页' }
+]
+
+/* 按水平给的推荐配置（关于页「用这套」直接套用） */
+const PRESETS = [
+  {
+    who: '高中 / 四级还没过',
+    zh: 9, en: 2, bankName: '基础',
+    banks: ['cet4', 'cefr-b2']
+  },
+  {
+    who: '四级已过 / 备六级',
+    zh: 7, en: 3, bankName: '基础 + 进阶',
+    banks: ['cet4', 'cefr-b2', 'ielts', 'toefl', 'npee']
+  },
+  {
+    who: '考研 / 雅思托福',
+    zh: 5, en: 4, bankName: '基础 + 进阶 + 学术',
+    banks: ['cet4', 'cefr-b2', 'ielts', 'toefl', 'npee', 'gre', 'academic']
+  },
+  {
+    who: '读论文 / 技术文档',
+    zh: 3, en: 5, bankName: '进阶 + 专业',
+    banks: ['npee', 'gre', 'gmat', 'sat', 'academic', 'business', 'tech', 'news']
+  }
 ]
 
 const dirNow = computed(() => stats.value?.dirNow || '')
@@ -41,6 +66,15 @@ const pinned = computed(() => {
   return !!(r && (r.lang === 'zh2en' || r.lang === 'en2zh'))
 })
 const modeHint = computed(() => (SITE_MODES.find((m) => m.id === cfg.sites.mode) || SITE_MODES[0]).hint)
+
+/* 当前这一页到底会不会被替换（白名单/黑名单模式下最容易让人以为「没生效」） */
+const pageInactive = computed(() => {
+  if (!cfg.on) return false
+  if (!host.value || host.value === '—') return false
+  if (cfg.sites.mode === 'allow') return !curRule.value
+  if (cfg.sites.mode === 'block') return !!curRule.value
+  return false
+})
 
 /* 英→中：档位越高越淡；显示「多少比例的词会变中文」 */
 const enPct = computed(() => {
@@ -82,12 +116,7 @@ function bumpSide(key, value) {
 
 async function refresh() {
   const r = await ask('fw-stats')
-  if (r && r.ok) {
-    stats.value = r
-    if (!ready.value && r.dirNow) tab.value = r.dirNow === 'en2zh' ? 'en' : 'zh'
-  } else {
-    stats.value = null
-  }
+  stats.value = r && r.ok ? r : null
 }
 
 async function push() {
@@ -133,6 +162,15 @@ function quickToggle() {
 
 function clearPin() {
   if (curRule.value) curRule.value.lang = 'auto'
+}
+
+/* 关于页：一键套用推荐配置，然后跳到「中 → 英」让用户先看到效果 */
+function applyPreset(p) {
+  cfg.zh.level = p.zh
+  cfg.en.level = p.en
+  cfg.zh.banks = p.banks.slice()
+  cfg.en.banks = p.banks.slice()
+  tab.value = 'zh'
 }
 
 const quickLabel = computed(() => {
@@ -218,28 +256,28 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- 三个标签 -->
-    <nav class="flex gap-1.5 px-3">
+    <!-- 四个标签 -->
+    <nav class="flex gap-1 px-3">
       <button
-        v-for="t in [{ id: 'zh', name: '中 → 英' }, { id: 'en', name: '英 → 中' }, { id: 'sites', name: '站点' }]"
+        v-for="t in [{ id: 'zh', name: '中 → 英' }, { id: 'en', name: '英 → 中' }, { id: 'sites', name: '站点' }, { id: 'about', name: '关于' }]"
         :key="t.id"
         type="button"
-        class="flex-1 rounded-lg border px-1 py-1.5 text-[11.5px] transition-colors duration-100"
+        class="flex-1 rounded-lg border px-0.5 py-1.5 text-[11px] transition-colors duration-100"
         :class="tab === t.id
           ? 'border-mint/60 bg-mint/14 text-mintsoft'
           : 'border-white/10 bg-white/[0.03] text-[#9fb0aa] hover:bg-white/[0.07]'"
         @click="tab = t.id"
       >
         {{ t.name }}
-        <span v-if="t.id !== 'sites'" class="ml-0.5 font-mono text-[9px] opacity-60">
-          {{ (t.id === 'en' ? cfg.en.level : cfg.zh.level) }}
+        <span v-if="t.id === 'zh' || t.id === 'en'" class="ml-0.5 font-mono text-[9px] opacity-60">
+          {{ t.id === 'en' ? cfg.en.level : cfg.zh.level }}
         </span>
-        <span v-else class="ml-0.5 font-mono text-[9px] opacity-60">{{ cfg.sites.rules.length }}</span>
+        <span v-else-if="t.id === 'sites'" class="ml-0.5 font-mono text-[9px] opacity-60">{{ cfg.sites.rules.length }}</span>
       </button>
     </nav>
 
     <!-- 强度 + 词库 -->
-    <section v-if="tab !== 'sites'" class="space-y-3.5 px-4 pb-3.5 pt-3" :class="cfg.on ? '' : 'opacity-60'">
+    <section v-if="tab === 'zh' || tab === 'en'" class="space-y-3.5 px-4 pb-3.5 pt-3" :class="cfg.on ? '' : 'opacity-60'">
       <div>
         <div class="mb-1.5 flex items-baseline justify-between">
           <span class="text-[11.5px] text-[#b6c6c0]">强度</span>
@@ -261,7 +299,22 @@ onMounted(async () => {
     </section>
 
     <!-- 站点规则 -->
-    <section v-else class="space-y-3 px-4 pb-3.5 pt-3" :class="cfg.on ? '' : 'opacity-60'">
+    <section v-else-if="tab === 'sites'" class="space-y-3 px-4 pb-3.5 pt-3" :class="cfg.on ? '' : 'opacity-60'">
+      <div
+        v-if="pageInactive"
+        class="flex items-center gap-2 rounded-md border border-[#e0a45a]/35 bg-[#e0a45a]/10 px-2 py-1.5 text-[10px] leading-relaxed text-[#e6b273]"
+      >
+        <span class="min-w-0 flex-1">
+          本站不替换<template v-if="cfg.sites.mode === 'allow'">（不在白名单里）</template>
+        </span>
+        <button
+          type="button"
+          class="shrink-0 rounded border border-[#e0a45a]/45 px-1.5 py-0.5 text-[10px] hover:bg-[#e0a45a]/20"
+          @click="quickToggle"
+        >
+          {{ cfg.sites.mode === 'allow' ? '加入白名单' : '取消屏蔽' }}
+        </button>
+      </div>
       <div>
         <div class="mb-1.5 flex items-baseline justify-between">
           <span class="text-[11.5px] text-[#b6c6c0]">替换范围</span>
@@ -349,8 +402,69 @@ onMounted(async () => {
       </p>
     </section>
 
+    <!-- 关于 -->
+    <section v-else class="space-y-3 px-4 pb-3.5 pt-3">
+      <div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-[12.5px] tracking-wide">Wordblend</span>
+          <span class="font-mono text-[10px] text-dim">v{{ ver }}</span>
+          <span class="ml-auto font-mono text-[9.5px] text-dim">MIT</span>
+        </div>
+        <p class="mt-1 text-[10.5px] leading-relaxed text-dim">
+          中文页夹英文词，英文页夹中文词。词典全部打包在扩展里，不联网、不采集、不用登录。
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-white/[0.08] bg-white/[0.03] px-2.5 py-2">
+        <div class="font-mono text-[9px] uppercase tracking-[0.14em] text-dim">开发</div>
+        <div class="mt-1 flex items-center justify-between text-[11px]">
+          <span class="text-[#cfdad5]">sxh705</span>
+          <a href="https://github.com/sxh705/wordblend" target="_blank" rel="noopener"
+             class="text-mintsoft hover:underline">源码 ↗</a>
+        </div>
+        <div class="mt-0.5 flex items-center justify-between text-[10px] text-dim">
+          <span>个人项目 · 欢迎提 issue</span>
+          <a href="https://github.com/sxh705/wordblend/issues" target="_blank" rel="noopener"
+             class="hover:text-mintsoft">反馈 ↗</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="mb-1.5 flex items-baseline justify-between">
+          <span class="text-[11.5px] text-[#b6c6c0]">推荐设置</span>
+          <span class="font-mono text-[9.5px] text-dim">选一行，点「用这套」</span>
+        </div>
+        <div class="space-y-1">
+          <div
+            v-for="p in PRESETS"
+            :key="p.who"
+            class="rounded-md border border-white/[0.07] bg-white/[0.03] px-2 py-1.5"
+          >
+            <div class="flex items-center justify-between gap-1.5">
+              <span class="min-w-0 truncate text-[11px] text-[#cfdad5]">{{ p.who }}</span>
+              <button
+                type="button"
+                class="shrink-0 rounded border border-mint/40 bg-mint/10 px-1.5 py-0.5 text-[9.5px] text-mintsoft hover:bg-mint/20"
+                @click="applyPreset(p)"
+              >
+                用这套
+              </button>
+            </div>
+            <div class="mt-0.5 font-mono text-[9px] text-dim">
+              中→英 {{ p.zh }} 档 · 英→中 {{ p.en }} 档 · {{ p.bankName }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[9.5px] leading-relaxed text-dim">
+        中→英 数字越大越密（10 = 几乎每句都有）；英→中 正好相反，1 最密、10 只偶尔标一个难词。
+        觉得太花就往回调一档，不够就加一档。
+      </p>
+    </section>
+
     <!-- 底部：统计 + 操作 -->
-    <footer class="space-y-2.5 border-t border-line px-4 py-3">
+    <footer v-if="tab !== 'about'" class="space-y-2.5 border-t border-line px-4 py-3">
       <div class="flex items-center justify-between gap-2">
         <span class="truncate font-mono text-[10px] text-dim">
           <template v-if="stats">扫描 {{ stats.scans }} 轮 · {{ stats.lastScanMs }}ms{{ errText ? ' · ' + errText : '' }}</template>
